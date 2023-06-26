@@ -111,7 +111,7 @@ class AdmissionFormModel(models.Model):
     community = models.CharField(
         max_length=20, choices=community_choices, default="", blank=True
     )
-    is_hostellite = models.BooleanField(default=False, blank=True)
+    is_hostellite = models.CharField(default="",max_length=100,blank=True)
     hsc_register_no = models.CharField(max_length=100, default="", blank=True)
     board_of_study = models.CharField(
         max_length=30, choices=board_choices, default="", blank=True

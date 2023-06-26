@@ -85,13 +85,12 @@ class LoginUserView(APIView):
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
-
-        user = authenticate(request, password=password, email=email)
-        if user is not None:
-            login(request, user)
+        try:
+            user = User.objects.get(email=email,password=password)
+            print(user)
             return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutUserView(APIView):
