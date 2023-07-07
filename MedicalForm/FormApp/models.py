@@ -1,5 +1,21 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+import os
+def image_path_and_rename(instance, filename):
+    upload_to = 'images'
+    ext = filename.split('.')[-1]
+    # get filename
+    filename = '{}.{}'.format(instance.ar_number, ext)
+    # return the whole path to the file
+    return os.path.join(upload_to, filename)
+
+def pdf_path_and_rename(instance, filename):
+    upload_to = 'files'
+    ext = filename.split('.')[-1]
+    # get filename
+    filename = '{}.{}'.format(instance.ar_number, ext)
+    # return the whole path to the file
+    return os.path.join(upload_to, filename)
 
 class ApplicationFormModel(models.Model):
     community_choices = [
@@ -192,22 +208,22 @@ class ApplicationFormModel(models.Model):
         default=0.0,
         blank=True,
     )
-    student_photo = models.ImageField(upload_to='images/',null=True)
-    neet_score_card = models.FileField(upload_to='files/',null=True)
-    conduct_certificate = models.FileField(upload_to='files/',null=True)
-    neet_admit_card = models.FileField(upload_to='files/',null=True)
-    allotment_order_sslc_certificate = models.FileField(upload_to='files/',null=True)
-    hsc_certificate = models.FileField(upload_to='files/',null=True)
-    transfer_certificate = models.FileField(upload_to='files/',null=True)
-    community_certificate = models.FileField(upload_to='files/',null=True)
-    aadhaar_card = models.FileField(upload_to='files/',null=True)
-    eligibility_migration_certificates = models.FileField(upload_to='files/',null=True)
-    nativity_certificate = models.FileField(upload_to='files/',null=True)
-    income_certificate = models.FileField(upload_to='files/',null=True)
-    physical_fitness_certificate = models.FileField(upload_to='files/',null=True)
-    declaration_form = models.FileField(upload_to='files/',null=True)
-    anti_ragging_bond = models.FileField(upload_to='files/',null=True)
-    physically_handicapped_certificate = models.FileField(upload_to='files/',null=True)
+    student_photo = models.ImageField(upload_to=image_path_and_rename,null=True,blank=True)
+    neet_score_card = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    conduct_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    neet_admit_card = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    allotment_order_sslc_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    hsc_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    transfer_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    community_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    aadhaar_card = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    eligibility_migration_certificates = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    nativity_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    income_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    physical_fitness_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    declaration_form = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    anti_ragging_bond = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
+    physically_handicapped_certificate = models.FileField(upload_to=pdf_path_and_rename,null=True,blank=True)
 
     def __str__(self):
         return self.email

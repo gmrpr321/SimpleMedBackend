@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import ApplicationFormModel
+import os
 class ApplicationModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicationFormModel
@@ -22,9 +23,9 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
     anti_ragging_bond = serializers.FileField(required=False)
     physically_handicapped_certificate = serializers.FileField(required=False)
 
-
     def create(self, validated_data):
         instance = super().create(validated_data)
+
         field_mapping = {
             'student_photo': 'student_photo.jpg',
             'neet_score_card': 'neet_score_card.pdf',
@@ -43,14 +44,20 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
             'anti_ragging_bond': 'anti_ragging_bond.pdf',
             'physically_handicapped_certificate': 'physically_handicapped_certificate.pdf',
         }
+
         for field_name, filename in field_mapping.items():
             file_data = validated_data.pop(field_name, None)
             if file_data:
                 file_field = getattr(instance, field_name)
                 new_file_name = f"{instance.ar_number}_{filename}"
-                file_field.name = new_file_name
+                file_path = file_field.path
+                new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+                os.rename(file_path, new_file_path)
+                file_field.name = new_file_path.split("/")[-1]
                 setattr(instance, field_name, file_field)
 
-        
         instance.save()
         return instance
+
+
+

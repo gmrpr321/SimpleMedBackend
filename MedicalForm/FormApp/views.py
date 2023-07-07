@@ -28,6 +28,19 @@ class ApplicationFormRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ApplicationModelSerializer
     lookup_field = "ar_number"
 
+    def update(self, request, *args, **kwargs):
+        print("yess")
+        try:
+            instance = ApplicationFormModel.objects.get(ar_number=kwargs['ar_number'])
+            serializer = ApplicationModelSerializer(instance, data=request.data, partial=True)
+            serializer.is_valid()
+            print(instance.ar_number)
+            print(serializer.errors)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
 # class PostView(APIView):
 #     parser_classes = (MultiPartParser, FormParser)
 
