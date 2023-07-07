@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from .models import ApplicationFormModel
-
 class ApplicationModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationFormModel
+        exclude = ("ar_number",)
+
     student_photo = serializers.ImageField(required=False)
     neet_score_card = serializers.FileField(required=False)
     conduct_certificate = serializers.FileField(required=False)
@@ -10,7 +13,7 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
     hsc_certificate = serializers.FileField(required=False)
     transfer_certificate = serializers.FileField(required=False)
     community_certificate = serializers.FileField(required=False)
-    aadhar_card = serializers.FileField(required=False)
+    aadhaar_card = serializers.FileField(required=False)
     eligibility_migration_certificates = serializers.FileField(required=False)
     nativity_certificate = serializers.FileField(required=False)
     income_certificate = serializers.FileField(required=False)
@@ -19,9 +22,6 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
     anti_ragging_bond = serializers.FileField(required=False)
     physically_handicapped_certificate = serializers.FileField(required=False)
 
-    class Meta:
-        model = ApplicationFormModel
-        exclude = ("ar_number",)
 
     def create(self, validated_data):
         instance = super().create(validated_data)
@@ -34,7 +34,7 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
             'hsc_certificate': 'hsc_certificate.pdf',
             'transfer_certificate': 'transfer_certificate.pdf',
             'community_certificate': 'community_certificate.pdf',
-            'aadhar_card': 'aadhar_card.pdf',
+            'aadhaar_card': 'aadhaar_card.pdf',
             'eligibility_migration_certificates': 'eligibility_migration_certificates.pdf',
             'nativity_certificate': 'nativity_certificate.pdf',
             'income_certificate': 'income_certificate.pdf',
@@ -43,13 +43,14 @@ class ApplicationModelSerializer(serializers.ModelSerializer):
             'anti_ragging_bond': 'anti_ragging_bond.pdf',
             'physically_handicapped_certificate': 'physically_handicapped_certificate.pdf',
         }
-
         for field_name, filename in field_mapping.items():
             file_data = validated_data.pop(field_name, None)
             if file_data:
                 file_field = getattr(instance, field_name)
-                file_field.name = f"{instance.ar_number}_{filename}"
+                new_file_name = f"{instance.ar_number}_{filename}"
+                file_field.name = new_file_name
                 setattr(instance, field_name, file_field)
 
+        
         instance.save()
         return instance

@@ -10,6 +10,11 @@ class ApplicationFormModel(models.Model):
         ("SCA", "SCA"),
         ("ST", "ST"),
     ] 
+    status_choices = [
+        ("applied","applied"),
+        ("discontinued","discontinued"),
+        ("admitted","admitted"),
+    ]
     board_choices = [
         ("State", "State"),
         ("CBSE", "CBSE"),
@@ -24,6 +29,7 @@ class ApplicationFormModel(models.Model):
         ("SCA", "SCA"),
         ("ST", "ST"),
     ]    
+    status= models.CharField(choices=status_choices,max_length=100,blank=True,null=True)
     ar_number = models.AutoField(primary_key=True)
     email = models.CharField(max_length=500,default='',blank=True)
     student_name = models.CharField(max_length=500, default="", blank=True)
@@ -194,7 +200,7 @@ class ApplicationFormModel(models.Model):
     hsc_certificate = models.FileField(upload_to='files/',null=True)
     transfer_certificate = models.FileField(upload_to='files/',null=True)
     community_certificate = models.FileField(upload_to='files/',null=True)
-    aadhar_card = models.FileField(upload_to='files/',null=True)
+    aadhaar_card = models.FileField(upload_to='files/',null=True)
     eligibility_migration_certificates = models.FileField(upload_to='files/',null=True)
     nativity_certificate = models.FileField(upload_to='files/',null=True)
     income_certificate = models.FileField(upload_to='files/',null=True)
