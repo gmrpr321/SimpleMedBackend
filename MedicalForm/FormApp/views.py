@@ -1,99 +1,27 @@
-from django.shortcuts import render
-from .serializers import ApplicationFormSerializer,AdmissionFormSerializer
-from rest_framework.views import APIView
+from rest_framework import generics
+from .models import ApplicationFormModel
+from .serializers import ApplicationModelSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser,ApplicationFormModel,AdmissionFormModel
+from rest_framework import serializers
 
-User = CustomUser
-class ApplicationFormCreateView(APIView):
-    def post(self, request):
-        serializer = ApplicationFormSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer.errors)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print( serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ApplicationFormListCreateView(generics.ListCreateAPIView):
+    queryset = ApplicationFormModel.objects.all()
+    serializer_class = ApplicationModelSerializer
 
-class ApplicationFormUpdateView(APIView):
-    def put(self, request, pk):
-        user = User.objects.get(email=pk)
-        application_instance = user.ApplicationForm
-        serializer = ApplicationFormSerializer(application_instance, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=400)
-
-class ApplicationFormRetriveView(APIView):
-    def get(self,request,pk):
+    def create(self, request, *args, **kwargs):
+        print('asdf')
+        serializer = self.get_serializer(data=request.data)
         try:
-            application_instance = ApplicationFormModel.objects.get(email=pk)
-            serializer = ApplicationFormSerializer(application_instance)
-            return Response(serializer.data)
-        except:
-            return Response(status=404)
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            print(e.detail)
+        print('d')
+        print(serializer.errors,'asdf',serializer)  # Print the errors to the console
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-class AdmissionFormCreateView(APIView):
-    def post(self, request):
-        serializer = AdmissionFormSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer.errors)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.error_messages, serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class AdmissionFormUpdateView(APIView):
-    def put(self, request, pk):
-        user = User.objects.get(email=pk)
-        admission_instance = user.AdmissionForm
-        serializer = AdmissionFormSerializer(admission_instance, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=400)
-
-class AdmissionFormRetriveView(APIView):
-    def get(self,request,pk):
-        try:
-            admission_instance = AdmissionFormModel.objects.get(email=pk)
-            serializer = AdmissionFormSerializer(admission_instance)
-            return Response(serializer.data)
-        except:
-            return Response(status=404)
-    
-class CreateUserView(APIView):
-    def post(self, request):
-        email = request.data.get("email")
-        password = request.data.get("password")
-        username = request.data.get("username")
-
-        try:
-            User.objects.create(username=username, email=email, password=password)
-            return Response(status=status.HTTP_201_CREATED)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-class LoginUserView(APIView):
-    def post(self, request):
-        email = request.data.get("email")
-        password = request.data.get("password")
-        try:
-            user = User.objects.get(email=email,password=password)
-            print(user)
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class LogoutUserView(APIView):
-    def get(self, request):
-        logout(request)
-        return Response(status=status.HTTP_200_OK)
+class ApplicationFormRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = ApplicationFormModel.objects.all()
+    serializer_class = ApplicationModelSerializer
