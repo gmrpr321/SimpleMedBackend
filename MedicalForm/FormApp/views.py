@@ -22,6 +22,7 @@ class ApplicationFormListCreateView(generics.ListCreateAPIView):
         headers = self.get_success_headers(serializer.data)
         print(list(ApplicationFormModel.objects.all())[-1].ar_number)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
 class ApplicationFormRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = ApplicationFormModel.objects.all()
@@ -40,6 +41,18 @@ class ApplicationFormRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             return Response(serializer.data)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        
+
+class ApplicationNoView(generics.RetrieveAPIView):
+    def get(self,request,*args,**kwargs):
+        data = list(ApplicationFormModel.objects.all())
+        if (len(data)==0):
+            print("ar no:0")
+            return Response(0,status.HTTP_200_OK)
+        else:
+            ar_no = data[-1].ar_number
+            print("the no. of student data inside the db is:"+str(ar_no))
+            return Response(ar_no,status=status.HTTP_200_OK)
 
 # class PostView(APIView):
 #     parser_classes = (MultiPartParser, FormParser)
