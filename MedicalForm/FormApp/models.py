@@ -2,26 +2,28 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import os
 def image_path_and_rename(instance, filename):
+    folder = str(instance.ar_number)
     upload_to = 'images'
     ext = filename.split('.')[-1]
     # get filename
     filename = '{}.{}'.format(instance.ar_number, ext)
     # return the whole path to the file
-    return os.path.join(upload_to, filename)
+    return os.path.join(upload_to+'/'+folder+'/', filename)
 
 def pdf_path_and_rename(instance, filename):
+    folder = str(instance.ar_number)
     upload_to = 'files'
     ext = filename.split('.')[-1]
     # get filename
     filename = '{}.{}'.format(instance.ar_number, ext)
     # return the whole path to the file
-    return os.path.join(upload_to, filename)
+    return os.path.join(upload_to+'/'+folder+'/', filename)
 
 class ApplicationFormModel(models.Model):
     community_choices = [
         ("OC", "OC"),
         ("BC", "BC"),
-        ("MBC", "MBc"),
+        ("MBC", "MBC"),
         ("SC", "SC"),
         ("SCA", "SCA"),
         ("ST", "ST"),
@@ -30,12 +32,6 @@ class ApplicationFormModel(models.Model):
         ("applied","applied"),
         ("discontinued","discontinued"),
         ("admitted","admitted"),
-    ]
-    board_choices = [
-        ("State", "State"),
-        ("CBSE", "CBSE"),
-        ("ICSE", "ICSE"),
-        ("Others", "Others"),
     ]
     community_choices = [
         ("OC", "OC"),
@@ -46,6 +42,8 @@ class ApplicationFormModel(models.Model):
         ("ST", "ST"),
     ]    
     status= models.CharField(choices=status_choices,max_length=100,blank=True,null=True)
+    #if status is discontinue then reason should be entered
+    reason_to_discontinue = models.CharField(max_length=500,default='',blank=True)
     ar_number = models.AutoField(primary_key=True)
     email = models.CharField(max_length=500,default='',blank=True)
     student_name = models.CharField(max_length=500, default="", blank=True)
@@ -96,7 +94,7 @@ class ApplicationFormModel(models.Model):
     #    
     hsc_register_no = models.CharField(max_length=100, default="", blank=True)
     board_of_study = models.CharField(
-        max_length=30, choices=board_choices, default="", blank=True
+        max_length=30, default="", blank=True
     )
     hsc_year_of_passing = models.IntegerField(
         validators=[MinValueValidator(2000), MaxValueValidator(3000)],
@@ -168,15 +166,6 @@ class ApplicationFormModel(models.Model):
     )
     allotment_order_date = models.DateField(default=None, null=True, blank=True)
 
-    neet_physics_mark = models.IntegerField(
-        validators=[MinValueValidator(0)], default=0, blank=True
-    )
-    neet_chemistry_mark = models.IntegerField(
-        validators=[MinValueValidator(0)], default=0, blank=True
-    )
-    neet_biology_mark = models.IntegerField(
-        validators=[MinValueValidator(0)], default=0, blank=True
-    )
     neet_total_mark = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(720)], default=0, blank=True
     )

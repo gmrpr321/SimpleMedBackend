@@ -66,7 +66,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
+    "http://192.168.43.6:3000",
 ]
 
 TEMPLATES = [
